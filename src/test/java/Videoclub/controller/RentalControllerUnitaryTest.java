@@ -38,7 +38,6 @@ public class RentalControllerUnitaryTest {
     private ObjectMapper objectMapper;
 
 
-
     @Test
     @DisplayName("POST /rentals - 201 Created - createRental")
     void createRental() throws Exception {
