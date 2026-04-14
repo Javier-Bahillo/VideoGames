@@ -3,6 +3,7 @@ package Videoclub.service;
 import Videoclub.dto.VideoGameDTO;
 import Videoclub.entity.VideoGame;
 import Videoclub.entity.VideoGameCopyStatus;
+import Videoclub.exception.ResourceNotFoundException;
 import Videoclub.mapper.VideoGameMapper;
 import Videoclub.repository.VideoGameCopyRepository;
 import Videoclub.repository.VideoGameRepository;
@@ -17,9 +18,11 @@ import org.springframework.data.domain.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -96,6 +99,47 @@ class VideoGameServiceImplTest {
         assertThat(result.getContent()).isEmpty();
         assertThat(result.getTotalElements()).isZero();
     }
+
+
+
+    @Test
+    @DisplayName("Busca Game ID")
+    void withSearchById_withResultOK() {
+        VideoGame game = buildGame("Mario Kart");
+        when(videoGameRepository.findById(game.getId())).thenReturn(Optional.of((game)));
+        when(videoGameMapper.toDto(game)).thenReturn(buildDto(game));
+        when(videoGameCopyRepository.countByGame_IdAndStatus(any(), any())).thenReturn(1L);
+        when(videoGameCopyRepository.countByGame_Id(any())).thenReturn(1L);
+
+
+        VideoGameDTO gameDTO = videoGameService.getGameById(game.getId());
+        assertThat(gameDTO.getTitle()).isEqualToIgnoringCase("Mario Kart");
+        assertThat(gameDTO.getTitle()).isEqualToIgnoringCase("Mario Kart");
+        assertThat(gameDTO.getAvailableCopies()).isEqualTo(1);
+        assertThat(gameDTO.getTotalCopies()).isEqualTo(1);
+
+        verify(videoGameRepository).findById(game.getId());
+        verify(videoGameMapper).toDto(game);
+
+
+    }
+
+    @Test
+    @DisplayName("Busca Game ID con excepcion")
+    void withSearchById_withNoResultOK() {
+        VideoGame game = buildGame("Mario Kart");
+        when(videoGameRepository.findById(game.getId())).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            videoGameService.getGameById(game.getId());
+        });
+
+        assertThat(exception.getMessage()).contains("Game not found with id: " + game.getId());
+
+        verify(videoGameRepository).findById(game.getId());
+
+    }
+
 
     // ─── Helpers ──────────────────────────────────────────────────
     private VideoGame buildGame(String title) {

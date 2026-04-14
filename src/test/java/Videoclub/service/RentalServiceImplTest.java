@@ -197,6 +197,23 @@ class RentalServiceImplTest {
             assertThat(dto.isOverdue()).isTrue();
             assertThat(dto.getProjectedLateFee()).isEqualByComparingTo(BigDecimal.valueOf(4.50));
         }
+
+        @Test
+        @DisplayName("Creacion de alquiler correcta")
+        void createRentalOk(){
+
+            VideoGame game = VideoGame.builder()
+                    .id(UUID.randomUUID())
+                    .title("The Legend of Zelda")
+                    .rentalPrice(BigDecimal.valueOf(3.99))
+                    .build();;
+            GameCopy copy = new GameCopy(UUID.randomUUID(), VideoGameCopyStatus.AVAILABLE, LocalDate.now(), LocalDate.now(), "testuser", "testuser", game, null);
+            Rental rental = buildActiveRental(LocalDate.now() , LocalDate.now() );;
+            when(gameCopyRepository.findFirstByGame_IdAndStatus(any(), any())).thenReturn(Optional.of(copy));
+            when(gameCopyRepository.save(copy)).thenReturn(copy);
+
+
+        }
     }
 
     // ─── Helper para construir alquileres de prueba ────────────────

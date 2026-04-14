@@ -23,10 +23,10 @@ public class Rental {
     @UuidGenerator
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID id;
-//    @Column(nullable = false)
-//    private Long userId;
-//    @Column(nullable = false)
-//    private Long gamecopyId;
+//    @Column(name = "user_id",nullable = false)
+//    private UUID userId;
+//    @Column(name = "game_copy_id",nullable = false)
+//    private UUID gamecopyId;
     @Column(nullable = false)
     private LocalDate startAt;
     @Column(nullable = false)

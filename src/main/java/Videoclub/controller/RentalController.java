@@ -60,6 +60,8 @@ public class RentalController {
 
     @PostMapping("/me/deactivate")
     public ResponseEntity<Void> deactivateMyAccount(@AuthenticationPrincipal User user) {
+
+        //Deberia llamar en el service
         user.setStatus("INACTIVE");
         user.setUpdatedAt(LocalDate.now());
         user.setUpdateBy(user.getUsername());
